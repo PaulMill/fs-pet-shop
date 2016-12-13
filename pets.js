@@ -1,9 +1,11 @@
+#!/usr/bin/env node
+
+/* eslint-disable no-console*/
  'use strict';
 
  const fs = require('fs');
  const path = require('path');
  const petsPath = path.join(__dirname, 'pets.json');
-
  const node = path.basename(process.argv[0]);
  const file = path.basename(process.argv[1]);
  const cmd = process.argv[2];
@@ -61,6 +63,7 @@
    });
  }
  else if (cmd === 'update') {
+   // eslint-disable next-line max-statement
    fs.readFile(petsPath, 'utf8', (readErr, data) => {
      if (readErr) {
        throw readErr;
