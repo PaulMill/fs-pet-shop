@@ -1,3 +1,4 @@
+/* eslint-disable no-console*/
 'use strict';
 const fs = require('fs');
 const http = require('http');
@@ -11,6 +12,7 @@ const server = http.createServer((req, res) => {
     fs.readFile(petsPath, 'utf8', (err, petsJSON) => {
       if (err) {
         console.error(err.stack);
+
         res.statusCode = 500;
         res.setHeader('Content-Type', 'text/plain');
         res.end('Internal Server Error');
@@ -21,7 +23,8 @@ const server = http.createServer((req, res) => {
       res.end(petsJSON);
     });
   }
-  else if (req.method === 'GET' && req.url === petRegExp.test(req.url)) {
+  else if (req.method === 'GET' && petRegExp.test(req.url)) {
+    // eslint-disable-next-line max-statements
     fs.readFile(petsPath, 'utf8', (err, petsJSON) => {
       if (err) {
         console.error(err.stack);
@@ -52,15 +55,16 @@ const server = http.createServer((req, res) => {
   }
   else if (req.method === 'POST' && req.url === '/pets') {
     let bodyJSON = '';
+
     req.on('data', (chunk) => {
       bodyJSON += chunk.toString();
     });
 
     req.on('end', () => {
-      //eslint-disable-next-line max-statements
-
+      // eslint-disable-next-line max-statements
       fs.readFile(petsPath, 'utf8', (err, petsJSON) => {
         if (err) {
+          // eslint-disable-next-line no-console
           console.error(err.stack);
 
           res.statusCode = 500;
@@ -74,6 +78,7 @@ const server = http.createServer((req, res) => {
         const age = Number.parseInt(body.age);
         const kind = body.kind;
         const name = body.name;
+
         if (Number.isNaN(age) || !kind || !name) {
           res.statusCode = 400;
           res.setHeader('Content-Type', 'text/plain');
@@ -82,13 +87,16 @@ const server = http.createServer((req, res) => {
           return;
         }
         const pet = { age, kind, name };
+
         pets.push(pet);
 
         const petJSON = JSON.stringify(pet);
+        const newPetJSON = JSON.stringify(pets);
 
-        fs.writeFile(petsPath, 'utf8', (err, petJSON) => {
-          if (err) {
-            console.error(err.stack);
+        fs.writeFile(petsPath, newPetJSON, (writeErr) => {
+          if (writeErr) {
+            // eslint-disable-next-line no-console
+            console.error(writeErr.stack);
 
             res.statusCode = 500;
             res.setHeader('Content-Type', 'text/plain');
@@ -96,10 +104,10 @@ const server = http.createServer((req, res) => {
 
             return;
           }
-        res.setHeader('Content-Type', 'application/json');
-        res.end(petJSON);
+          res.setHeader('Content-Type', 'application/json');
+          res.end(petJSON);
         });
-      })
+      });
     });
   }
   else {
@@ -108,6 +116,7 @@ const server = http.createServer((req, res) => {
     res.end('Not Found');
   }
 });
+
 const port = process.env.PORT || 8000;
 
 server.listen(port, () => {

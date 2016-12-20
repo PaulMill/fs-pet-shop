@@ -73,6 +73,7 @@ app.get('/pets/:id', (req, res, next) => {
 });
 
 // function for catching errors 500
+// eslint-disable-next-line max-params
 app.use((err, _req, res, _next) => {
   // eslint-disable-next-line no-console
   console.error(err.stack);
